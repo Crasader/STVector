@@ -35,7 +35,7 @@ public:
     T& emplace_back(T&& v);
 
     // Remove element in a range
-    //void erase(std::vector<T>::const_iterator firstt, std::vector<T>::const_iterator lastt);
+    void erase(std::size_t first, std::size_t lenght);
 
     // Delete last element
     T pop_back();
@@ -105,6 +105,12 @@ template <class T>
 T& STVector<T>::emplace_back(T&& v) {
     std::lock_guard<std::mutex> guard(_mutex);
     return _vector.emplace_back(v);
+}
+
+template <class T>
+void STVector<T>::erase(std::size_t first, std::size_t lenght) {
+    std::lock_guard<std::mutex> guard(_mutex);
+    _vector.erase(_vector.begin() + first, _vector.begin() + lenght);
 }
 
 template <class T>
