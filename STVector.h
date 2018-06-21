@@ -56,6 +56,18 @@ public:
     // Get last element
     T& back();
     //const T& back() const;
+
+    ///////////////////////
+    // Helper
+    //////////////////////
+
+    // Call a function for element
+    void foreach(std::function<void(const T&)> f) const;   //Recorre el vector y ejecuta la función pasada por parámetro para cada elemento
+    void foreach(std::function<void(T&)> f);
+
+    // Swap
+    void swapElement(size_t pos, T *other);
+    void swap(STVector &other);
 };
 
 
@@ -132,7 +144,32 @@ T& STVector<T>::back() {
 }
 
 
+template <class T>
+void STVector<T>::foreach(std::function<void(const T &)> f) const {
+    std::lock_guard<std::mutex> guard(_mutex);
+    for (auto &element : _vector) {
+        f(element);
+    }
+}
 
+template <class T>
+void STVector<T>::foreach(std::function<void(T & )> f) {
+    std::lock_guard<std::mutex> guard(_mutex);
+    for (auto &element : _vector) {
+        f(element);
+    }
+}
 
+template <class T>
+void STVector<T>::swapElement(size_t pos, T *other) {
+    std::lock_guard<std::mutex> guard(_mutex);
+    std::swap(_vector[pos], other);
+}
+
+template <class T>
+void STVector<T>::swap(STVector<T> &other) {
+    std::lock_guard<std::mutex> guard(_mutex);
+    _vector.swap(other._vector);
+}
 
 #endif //STVECTOR_STVECTOR_H
