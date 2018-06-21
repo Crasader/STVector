@@ -51,7 +51,7 @@ public:
 
     // Operator [] to get an element
     T& operator[](size_t idx);
-    //const T& operator[](size_t idx);
+    const T& operator[](size_t idx) const;
 
     // Get last element
     T& back();
@@ -139,6 +139,12 @@ bool STVector<T>::empty() {
 
 template <class T>
 T& STVector<T>::operator[](size_t idx) {
+    std::lock_guard<std::mutex> guard(_mutex);
+    return _vector[idx];
+}
+
+template <class T>
+const T& STVector<T>::operator[](size_t idx) const {
     std::lock_guard<std::mutex> guard(_mutex);
     return _vector[idx];
 }
