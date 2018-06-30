@@ -55,7 +55,7 @@ public:
 
     // Get last element
     T& back();
-    //const T& back() const;
+    const T& back() const;
 
     ///////////////////////
     // Helper
@@ -151,6 +151,12 @@ const T& STVector<T>::operator[](size_t idx) const {
 
 template <class T>
 T& STVector<T>::back() {
+    std::lock_guard<std::mutex> guard(_mutex);
+    return _vector.back();
+}
+
+template <class T>
+const T& STVector<T>::back() const {
     std::lock_guard<std::mutex> guard(_mutex);
     return _vector.back();
 }
