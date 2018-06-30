@@ -4,31 +4,35 @@
 #include "STVector.h"
 
 
+static int mode = 0;
+
 class Wallet {
 private:
-    int money_ = 10000;
-    //std::vector<int> _movements; //Of money
-    STVector<int> _movements;
-    std::mutex _mutex;
+    std::vector<int> _movementsSTDVector; //Of money
+    STVector<int> _movementsSTVector;
 public:
     Wallet() {};
-    const int getMoney() const {return money_;}
-    const unsigned long getNumbersOfMovements() { return _movements.size();};
+    const unsigned long getNumbersOfMovements() {
+        if (mode == 0) {
+            return _movementsSTVector.size();
+        } else {
+            return _movementsSTDVector.size();
+        }
+
+    };
     void addMoney(const unsigned int amount) {
-        _movements.push_back(amount);
-        std::lock_guard<std::mutex> guard(_mutex);
-        for (int i = 0; i < amount; ++i)
-        {
-            money_++;
+        if (mode == 0) {
+            _movementsSTVector.push_back(amount);
+        } else {
+            _movementsSTDVector.push_back(amount);
         }
     }
 
     void spendMoney(const unsigned int amount) {
-        _movements.push_back(-amount);
-        std::lock_guard<std::mutex> guard(_mutex);
-        for (int i = 0; i < amount; ++i)
-        {
-            money_--;
+        if (mode == 0) {
+            _movementsSTVector.push_back(amount);
+        } else {
+            _movementsSTDVector.push_back(amount);
         }
     }
 };
@@ -50,6 +54,20 @@ unsigned long testWallet(unsigned int movements, unsigned int amount) {
 }
 
 int main() {
+    std::cout << "\n-------------------------------------------------------------------------" << std::endl;
+    std::cout << "This example checks that STVector class is safe thread unlike std::vector." << std::endl;
+    std::cout << "The example simulates a wallet with movements of money positives and negatives\n" << std::endl;
+    std::cout << "Please select a choose (0-1):" << std::endl;
+    std::cout << "\t0 - the example is executed using the class STVector (SafeThread Vector)" << std::endl;
+    std::cout << "\t1 - the example is executed using the class std::vector" << std::endl;
+    std::cin >> mode;
+
+    if (mode > 1)
+    {
+        std::cout << "The mode is not available" << std::endl;
+        getchar();
+        return 0;
+    }
 
     for (int i = 0; i < 1000; ++i)
     {
@@ -62,8 +80,7 @@ int main() {
         }
     }
     std::cout << "Simulation over" << std::endl;
+
     getchar();
-
-
     return 0;
 }
